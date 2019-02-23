@@ -35,12 +35,16 @@ export default class SetItemSelector extends Component {
         onClose: () => {}
     };
 
-    // Initial State
-    state = {
-        data: {},
-        list: [],
-        segment: null
-    };
+    constructor (props) {
+        super(props);
+
+        // Initial State
+        this.state = Object.assign({
+            data: {},
+            list: [],
+            segment: null
+        }, this.initList(props.data));
+    }
 
     /**
      * Handle Functions
@@ -91,21 +95,17 @@ export default class SetItemSelector extends Component {
             }
         });
 
-        this.setState({
+        return {
             selectedList: selectedList,
             unselectedList: unselectedList
-        });
+        };
     };
 
     /**
      * Lifecycle Functions
      */
-    componentWillMount () {
-        this.initList(this.props.data);
-    }
-
     componentWillReceiveProps (nextProps) {
-        this.initList(nextProps.data);
+        this.setState(this.initList(nextProps.data));
     }
 
     /**
