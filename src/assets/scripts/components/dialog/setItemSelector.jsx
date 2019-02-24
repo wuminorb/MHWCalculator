@@ -25,6 +25,32 @@ import FunctionalIcon from 'components/common/functionalIcon';
 // Load Constant
 import Constant from 'constant';
 
+let initState = (data) => {
+    let selectedList = [];
+    let unselectedList = [];
+
+    data = data.map((set) => {
+        return set.id;
+    });
+
+    SetDataset.getNames().sort().forEach((setId) => {
+
+        let set = SetDataset.getInfo(setId);
+
+        // Skip Selected Sets
+        if (-1 !== data.indexOf(set.id)) {
+            selectedList.push(set);
+        } else {
+            unselectedList.push(set);
+        }
+    });
+
+    return {
+        selectedList: selectedList,
+        unselectedList: unselectedList
+    };
+};
+
 export default class SetItemSelector extends Component {
 
     // Default Props
@@ -43,7 +69,7 @@ export default class SetItemSelector extends Component {
             data: {},
             list: [],
             segment: null
-        }, this.initList(props.data));
+        }, initState(props.data));
     }
 
     /**
@@ -75,37 +101,11 @@ export default class SetItemSelector extends Component {
         });
     };
 
-    initList = (data) => {
-        let selectedList = [];
-        let unselectedList = [];
-
-        data = data.map((set) => {
-            return set.id;
-        });
-
-        SetDataset.getNames().sort().forEach((setId) => {
-
-            let set = SetDataset.getInfo(setId);
-
-            // Skip Selected Sets
-            if (-1 !== data.indexOf(set.id)) {
-                selectedList.push(set);
-            } else {
-                unselectedList.push(set);
-            }
-        });
-
-        return {
-            selectedList: selectedList,
-            unselectedList: unselectedList
-        };
-    };
-
     /**
      * Lifecycle Functions
      */
-    componentWillReceiveProps (nextProps) {
-        this.setState(this.initList(nextProps.data));
+    static getDerivedStateFromProps(nextProps, prevState) {
+        return initState(nextProps.data);
     }
 
     /**

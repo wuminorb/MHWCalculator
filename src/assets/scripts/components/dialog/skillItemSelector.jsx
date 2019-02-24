@@ -24,6 +24,36 @@ import FunctionalIcon from 'components/common/functionalIcon';
 // Load Constant
 import Constant from 'constant';
 
+let initState = (data) => {
+    let selectedList = [];
+    let unselectedList = [];
+
+    data = data.map((skill) => {
+        return skill.id;
+    });
+
+    SkillDataset.getNames().sort().forEach((skillId) => {
+
+        let skill = SkillDataset.getInfo(skillId);
+
+        if (false === skill.from.jewel && false === skill.from.armor) {
+            return;
+        }
+
+        // Skip Selected Skills
+        if (-1 !== data.indexOf(skill.id)) {
+            selectedList.push(skill);
+        } else {
+            unselectedList.push(skill);
+        }
+    });
+
+    return {
+        selectedList: selectedList,
+        unselectedList: unselectedList
+    };
+};
+
 export default class SkillItemSelector extends Component {
 
     // Default Props
@@ -42,7 +72,7 @@ export default class SkillItemSelector extends Component {
             data: {},
             list: [],
             segment: null
-        }, this.initList(props.data));
+        }, initState(props.data));
     }
 
     /**
@@ -74,41 +104,11 @@ export default class SkillItemSelector extends Component {
         });
     };
 
-    initList = (data) => {
-        let selectedList = [];
-        let unselectedList = [];
-
-        data = data.map((skill) => {
-            return skill.id;
-        });
-
-        SkillDataset.getNames().sort().forEach((skillId) => {
-
-            let skill = SkillDataset.getInfo(skillId);
-
-            if (false === skill.from.jewel && false === skill.from.armor) {
-                return;
-            }
-
-            // Skip Selected Skills
-            if (-1 !== data.indexOf(skill.id)) {
-                selectedList.push(skill);
-            } else {
-                unselectedList.push(skill);
-            }
-        });
-
-        return {
-            selectedList: selectedList,
-            unselectedList: unselectedList
-        };
-    };
-
     /**
      * Lifecycle Functions
      */
-    componentWillReceiveProps (nextProps) {
-        this.setState(this.initList(nextProps.data));
+    static getDerivedStateFromProps(nextProps, prevState) {
+        return initState(nextProps.data);
     }
 
     /**

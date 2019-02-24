@@ -71,11 +71,11 @@ export default class EquipsDisplayer extends Component {
     /**
      * Lifecycle Functions
      */
-    componentWillReceiveProps (nextProps) {
-        this.setState({
+    static getDerivedStateFromProps(nextProps, prevState) {
+        return {
             equips: nextProps.equips,
             equipsLock: nextProps.equipsLock
-        });
+        };
     }
 
     /**
